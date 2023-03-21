@@ -28,4 +28,10 @@
         android:name="com.example.myapplication.ui.movies.MoviesFragment"
         android:label="@string/menu_movies"
         tools:layout="@layout/fragment_movies" />
+
+    <fragment
+        android:id="@+id/nav_news"
+        android:name="com.example.myapplication.ui.news.NewsFragment"
+        android:label="@string/menu_news"
+        tools:layout="@layout/fragment_news" />
 </navigation>

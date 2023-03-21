@@ -1,15 +1,23 @@
 package com.example.myapplication.adapters
 
+import android.content.Context
 import android.media.Image
+import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.FitCenter
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.bumptech.glide.request.RequestOptions
 import com.example.myapplication.R
+import com.example.myapplication.api.Article
+import com.example.myapplication.api.ResultX
 
-class recyclerViewNewsAdapter (private val dataSet: Array<String>) :
+class recyclerViewNewsAdapter (private val dataSet: MutableList<ResultX>,private val context: Context) :
     RecyclerView.Adapter<recyclerViewNewsAdapter.ViewHolder>() {
 
     /**
@@ -43,7 +51,17 @@ class recyclerViewNewsAdapter (private val dataSet: Array<String>) :
 
         // Get element from your dataset at this position and replace the
         // contents of the view with that element
-        viewHolder.titleTv.text = dataSet[position]
+        viewHolder.titleTv.text = dataSet[position].title
+        viewHolder.subTitleTv.text = dataSet[position].content
+
+        var requestOptions = RequestOptions()
+        requestOptions = requestOptions.transforms(FitCenter(), RoundedCorners(16))
+        Glide.with(context)
+            .load(dataSet[position].image_url)
+            .apply(requestOptions)
+            .skipMemoryCache(true)//for caching the image url in case phone is offline
+            .into(viewHolder.image)
+
     }
 
     // Return the size of your dataset (invoked by the layout manager)

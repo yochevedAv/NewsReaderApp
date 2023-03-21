@@ -8,12 +8,11 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.myapplication.ApiRequests
-import com.example.myapplication.api.NewsJson
-import com.example.myapplication.api.moviesJson
+import com.example.myapplication.adapters.recyclerViewNewsAdapter
+import com.example.myapplication.api.*
 import com.example.myapplication.databinding.FragmentNewsBinding
-import com.example.myapplication.ui.movies.BASE_URL
-import com.example.myapplication.ui.movies.MoviesViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -23,15 +22,15 @@ import retrofit2.Retrofit
 import retrofit2.awaitResponse
 import retrofit2.converter.gson.GsonConverterFactory
 
-const val BASE_URL = "https://extract-news.p.rapidapi.com/"
+const val BASE_URL = "https://newsdata.io/api/1/"
 
-class NewsFragment: Fragment() {
+class NewsFragment : Fragment() {
     private var _binding: FragmentNewsBinding? = null
     private var TAG = "NewsFragment"
-
-    // This property is only valid between onCreateView and
-    // onDestroyView.
     private val binding get() = _binding!!
+
+    private var mAdapter: recyclerViewNewsAdapter? = null;
+    private var mArticles: MutableList<ResultX> = ArrayList()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -44,19 +43,25 @@ class NewsFragment: Fragment() {
         _binding = FragmentNewsBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-       /* val textView: TextView = binding
-        NewsViewModel.text.observe(viewLifecycleOwner) {
+        /*val textView: TextView = binding.textNews
+        newsViewModel.text.observe(viewLifecycleOwner) {
             textView.text = it
         }*/
 
-        getCurrentData()
+        binding.recyclerView!!.layoutManager = LinearLayoutManager(context)
+
+        mAdapter = context?.let { recyclerViewNewsAdapter(mArticles, it) }
+        binding.recyclerView!!.adapter = mAdapter
+
+
+        fetchArticleList()
 
 
         return root
 
     }
 
-    private fun getCurrentData(){
+    private fun fetchArticleList() {
 
         val api = Retrofit.Builder()
             .baseUrl(BASE_URL)
@@ -66,14 +71,22 @@ class NewsFragment: Fragment() {
 
 
         GlobalScope.launch(Dispatchers.IO) {
-            val response: Response<NewsJson> = api.getNews().awaitResponse()
-            Log.d("api",response.message())
-            if(response.isSuccessful){
-                val data: NewsJson = response.body()!!
-                Log.d(TAG, data.status + " " + data.article)
+            val response: Response<ArticleJson> = api.getNews().awaitResponse()
+            Log.d("api", response.message())
+            if (response.isSuccessful) {
+                val res = response.body()
+                if (res != null) {
 
-                withContext(Dispatchers.Main){
-                    //_binding?.movieName?.text = data.next[0].toString()
+
+                    val data: ArticleJson = response.body()!!
+                    Log.d(TAG, data.status + " " + data.results)
+                    Log.d(TAG, mArticles.toString())
+                    Log.d(TAG, mAdapter.toString())
+                    withContext(Dispatchers.Main) {
+                        mArticles.addAll(res.results!!)
+                        //mAdapter = recyclerViewNewsAdapter( mArticles)
+                        mAdapter!!.notifyDataSetChanged()
+                    }
                 }
             }
         }
