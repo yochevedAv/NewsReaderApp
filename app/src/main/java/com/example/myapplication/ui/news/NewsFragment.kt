@@ -5,14 +5,14 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.myapplication.ApiRequests
-import com.example.myapplication.adapters.recyclerViewNewsAdapter
+import com.example.myapplication.adapter.recyclerViewNewsAdapter
 import com.example.myapplication.api.*
 import com.example.myapplication.databinding.FragmentNewsBinding
+import com.example.myapplication.network.ArticlesViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -43,10 +43,6 @@ class NewsFragment : Fragment() {
         _binding = FragmentNewsBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-        /*val textView: TextView = binding.textNews
-        newsViewModel.text.observe(viewLifecycleOwner) {
-            textView.text = it
-        }*/
 
         binding.recyclerView!!.layoutManager = LinearLayoutManager(context)
 
@@ -77,14 +73,8 @@ class NewsFragment : Fragment() {
                 val res = response.body()
                 if (res != null) {
 
-
-                    val data: ArticleJson = response.body()!!
-                    Log.d(TAG, data.status + " " + data.results)
-                    Log.d(TAG, mArticles.toString())
-                    Log.d(TAG, mAdapter.toString())
                     withContext(Dispatchers.Main) {
-                        mArticles.addAll(res.results!!)
-                        //mAdapter = recyclerViewNewsAdapter( mArticles)
+                        mArticles.addAll(res.ResultItems.resultXList!!)
                         mAdapter!!.notifyDataSetChanged()
                     }
                 }

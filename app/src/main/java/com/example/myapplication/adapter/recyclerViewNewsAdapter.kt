@@ -1,8 +1,6 @@
-package com.example.myapplication.adapters
+package com.example.myapplication.adapter
 
 import android.content.Context
-import android.media.Image
-import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,7 +12,6 @@ import com.bumptech.glide.load.resource.bitmap.FitCenter
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
 import com.example.myapplication.R
-import com.example.myapplication.api.Article
 import com.example.myapplication.api.ResultX
 
 class recyclerViewNewsAdapter (private val dataSet: MutableList<ResultX>,private val context: Context) :
