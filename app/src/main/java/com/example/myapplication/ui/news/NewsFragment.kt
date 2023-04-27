@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.example.myapplication.MyViewModel
-import com.example.myapplication.adapter.RecyclerViewNewsAdapter
 import com.example.myapplication.api.ResultX
 import com.example.myapplication.data.Resource
 import com.example.myapplication.databinding.FragmentNewsBinding

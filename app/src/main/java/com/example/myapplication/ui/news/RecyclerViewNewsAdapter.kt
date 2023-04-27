@@ -1,11 +1,10 @@
-package com.example.myapplication.adapter
+package com.example.myapplication.ui.news
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.myapplication.api.ResultX
-import com.example.myapplication.data.Resource
 import com.example.myapplication.databinding.NewsItemBinding
 
 class RecyclerViewNewsAdapter(private val myData: List<ResultX>) :
