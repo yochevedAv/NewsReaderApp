@@ -1,9 +1,7 @@
 package com.example.myapplication
 
-import com.example.myapplication.api.ArticleJson
-import com.example.myapplication.db.ArticleEntity
-import retrofit2.Call
+import com.example.myapplication.network.Api
 
-class ApiRequestsImpl : ApiRequests {
+class ApiRequestsImpl : Api {
 
 }
