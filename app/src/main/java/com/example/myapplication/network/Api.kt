@@ -6,6 +6,6 @@ import retrofit2.http.GET
 
 interface Api {
     @GET("news?apikey=pub_19248f1b3480ae3dfbb139616df7eaf567f88")
-    suspend fun getNews(): Call<List<ArticleJson>>
+     fun getNews(): Call<ArticleJson>
 
 }

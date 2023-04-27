@@ -1,54 +1,103 @@
 package com.example.myapplication.ui.news
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
-import com.example.myapplication.MyViewModel
-import com.example.myapplication.api.ResultX
-import com.example.myapplication.data.Resource
+import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.room.Room
+import com.example.myapplication.api.*
 import com.example.myapplication.databinding.FragmentNewsBinding
+import com.example.myapplication.db.ArticleDatabase
+import com.example.myapplication.network.Api
+import com.google.gson.Gson
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.awaitResponse
+import retrofit2.converter.gson.GsonConverterFactory
+
+const val BASE_URL = "https://newsdata.io/api/1/"
 
 class NewsFragment : Fragment() {
+    private var _binding: FragmentNewsBinding? = null
+    private var TAG = "NewsFragment"
+    private val binding get() = _binding!!
 
-    private lateinit var binding: FragmentNewsBinding
-    private lateinit var adapter: RecyclerViewNewsAdapter
-    private val viewModel: MyViewModel by viewModels()
+    private var mAdapter: RecyclerViewNewsAdapter? = null;
+    private var mArticles: MutableList<ResultX> = ArrayList()
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        binding = FragmentNewsBinding.inflate(inflater, container, false)
-        return binding.root
+    ): View {
+        val newsViewModel =
+            ViewModelProvider(this)[NewsViewModel::class.java]
+
+        _binding = FragmentNewsBinding.inflate(inflater, container, false)
+        val root: View = binding.root
+
+
+        binding.recyclerView!!.layoutManager = LinearLayoutManager(context)
+
+        mAdapter = context?.let { RecyclerViewNewsAdapter(mArticles) }
+        binding.recyclerView!!.adapter = mAdapter
+
+
+        fetchArticleList()
+
+
+        return root
+
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    private fun fetchArticleList() {
 
-        viewModel.myData.observe(viewLifecycleOwner) { result ->
-            when (result) {
-                is Resource.Loading -> showLoading()
-                is Resource.Success -> showData(result.data)
-                is Resource.Error -> showError(result.message)
+        val api = Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(Api::class.java)
+
+
+        GlobalScope.launch(Dispatchers.IO) {
+            val response: Response<ArticleJson> = api.getNews().awaitResponse()
+            Log.d("api", response.message())
+            if (response.isSuccessful) {
+                val res = response.body()
+                if (res != null) {
+
+                    withContext(Dispatchers.Main) {
+                        mArticles.addAll(res.results)
+                        mAdapter!!.notifyDataSetChanged()
+
+
+
+
+//                        val database = Room.databaseBuilder(
+//                            requireContext().applicationContext,
+//                            ArticleDatabase::class.java, "article-db"
+//                        ).build()
+//
+//                        val exampleDao = database.articleDao()
+//                        exampleDao.insertAllExampleObjects(listOf(res))
+                    }
+                }
             }
         }
-        viewModel.loadData()
+
     }
 
-    private fun showLoading() {
-        // Show a loading indicator
-    }
 
-    private fun showData(data: List<ResultX>) {
-        adapter = RecyclerViewNewsAdapter(data)
-        binding.recyclerView.adapter = adapter
-    }
-
-    private fun showError(message: String) {
-        // Show an error message
-    }
 }
+
+
+
+

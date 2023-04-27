@@ -4,7 +4,6 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
-import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
@@ -31,7 +30,7 @@ class ApiConfigurations {
                     .client(client)
                     .baseUrl(if (base_url.endsWith("/")) base_url else "$base_url/")
                     .addConverterFactory(GsonConverterFactory.create(gson))
-                    .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                    //.addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                     .build()
             }
 

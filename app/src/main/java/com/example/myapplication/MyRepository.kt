@@ -1,4 +1,6 @@
 package com.example.myapplication
+import android.app.Application
+import android.content.Context
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
 import com.example.myapplication.api.AnyTypeConverter
@@ -13,12 +15,12 @@ import com.example.myapplication.network.ApiConfigurations
 import retrofit2.awaitResponse
 
 
-class MyRepository {
+class MyRepository (private val context: Context) {
 
     private val apiService = ApiConfigurations.getClient<Api>()
-    private val articleDao: ArticleDao = ArticleDatabase.getInstance().articleDao()
+    private val articleDao: ArticleDao = ArticleDatabase.getDatabase(context).articleDao()
 
-    suspend fun getArticles(): Resource<List<ArticleJson>> {
+    suspend fun getArticles(): Resource<ArticleJson> {
         return try {
             val response = apiService.getNews()
             if (response.isExecuted) {

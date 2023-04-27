@@ -1,5 +1,7 @@
 package com.example.myapplication
 
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -9,10 +11,10 @@ import com.example.myapplication.data.Resource
 import com.example.myapplication.db.ArticleDao
 import kotlinx.coroutines.launch
 
-class MyViewModel : ViewModel() {
+class MyViewModel (application: Application) : AndroidViewModel(application) {
 
 
-    private val repository = MyRepository()
+    private val repository = MyRepository(application.applicationContext)
 
     private val _myData = MutableLiveData<Resource<List<ResultX>>>()
     val myData: LiveData<Resource<List<ResultX>>>
@@ -27,7 +29,7 @@ class MyViewModel : ViewModel() {
         viewModelScope.launch {
             val result = repository.getArticles()
             if (result is Resource.Success) {
-                _myData.value = Resource.Success(result.data[0].results)
+                _myData.value = Resource.Success(result.data.results)
             } else if (result is Resource.Error) {
                 _myData.value = Resource.Error(result.message)
             }
