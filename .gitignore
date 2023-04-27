@@ -13,3 +13,5 @@
 .externalNativeBuild
 .cxx
 local.properties
+/.idea/kotlinc.xml
+/app/schemas/com.example.myapplication.db.ArticleDatabase/1.json
