@@ -7,16 +7,20 @@ import com.example.myapplication.api.ResultX
 import com.example.myapplication.api.StringListTypeConverter
 import com.example.myapplication.data.Resource
 import com.example.myapplication.db.ArticleDao
+import com.example.myapplication.db.ArticleDatabase
+import com.example.myapplication.network.Api
+import com.example.myapplication.network.ApiConfigurations
 import retrofit2.awaitResponse
 
 
 class MyRepository {
 
-    private val api = ApiConfigurations.
+    private val apiService = ApiConfigurations.getClient<Api>()
+    private val articleDao: ArticleDao = ArticleDatabase.getInstance().articleDao()
 
     suspend fun getArticles(): Resource<List<ArticleJson>> {
         return try {
-            val response = apiRequests.getNews()
+            val response = apiService.getNews()
             if (response.isExecuted) {
                 val data = response.execute().body()
                 if (data != null) {

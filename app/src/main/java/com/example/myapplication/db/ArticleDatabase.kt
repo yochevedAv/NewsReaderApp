@@ -21,6 +21,12 @@ import okhttp3.RequestBody
 
 abstract class ArticleDatabase : RoomDatabase() {
     abstract fun articleDao(): ArticleDao
+
+    companion object {
+        fun getInstance(): Any {
+
+        }
+    }
 }
 
 @Dao
