@@ -1,90 +1,55 @@
 package com.example.myapplication.ui.news
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.myapplication.ApiRequests
-import com.example.myapplication.adapter.recyclerViewNewsAdapter
-import com.example.myapplication.api.*
+import androidx.fragment.app.viewModels
+import com.example.myapplication.MyViewModel
+import com.example.myapplication.adapter.RecyclerViewNewsAdapter
+import com.example.myapplication.api.ResultX
+import com.example.myapplication.data.Resource
 import com.example.myapplication.databinding.FragmentNewsBinding
-import com.example.myapplication.network.ArticlesViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.awaitResponse
-import retrofit2.converter.gson.GsonConverterFactory
-
-const val BASE_URL = "https://newsdata.io/api/1/"
 
 class NewsFragment : Fragment() {
-    private var _binding: FragmentNewsBinding? = null
-    private var TAG = "NewsFragment"
-    private val binding get() = _binding!!
 
-    private var mAdapter: recyclerViewNewsAdapter? = null;
-    private var mArticles: MutableList<ResultX> = ArrayList()
+    private lateinit var binding: FragmentNewsBinding
+    private lateinit var adapter: RecyclerViewNewsAdapter
+    private val viewModel: MyViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View {
-        val newsViewModel =
-            ViewModelProvider(this)[NewsViewModel::class.java]
-
-        _binding = FragmentNewsBinding.inflate(inflater, container, false)
-        val root: View = binding.root
-
-
-        binding.recyclerView!!.layoutManager = LinearLayoutManager(context)
-
-        mAdapter = context?.let { recyclerViewNewsAdapter(mArticles, it) }
-        binding.recyclerView!!.adapter = mAdapter
-
-
-        fetchArticleList()
-
-
-        return root
-
+    ): View? {
+        binding = FragmentNewsBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
-    private fun fetchArticleList() {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-        val api = Retrofit.Builder()
-            .baseUrl(BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-            .create(ApiRequests::class.java)
-
-
-        GlobalScope.launch(Dispatchers.IO) {
-            val response: Response<ArticleJson> = api.getNews().awaitResponse()
-            Log.d("api", response.message())
-            if (response.isSuccessful) {
-                val res = response.body()
-                if (res != null) {
-
-                    withContext(Dispatchers.Main) {
-                        mArticles.addAll(res.ResultItems.resultXList!!)
-                        mAdapter!!.notifyDataSetChanged()
-                    }
-                }
+        viewModel.myData.observe(viewLifecycleOwner) { result ->
+            when (result) {
+                is Resource.Loading -> showLoading()
+                is Resource.Success -> showData(result.data)
+                is Resource.Error -> showError(result.message)
             }
         }
+        viewModel.loadData()
     }
 
+    private fun showLoading() {
+        // Show a loading indicator
+    }
 
+    private fun showData(data: List<ResultX>) {
+        adapter = RecyclerViewNewsAdapter(data)
+        binding.recyclerView.adapter = adapter
+    }
+
+    private fun showError(message: String) {
+        // Show an error message
+    }
 }
-
-
-
-
