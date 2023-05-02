@@ -11,10 +11,8 @@ class ApiConfigurations {
     companion object {
 
         var retrofit: Retrofit? = null
-        var base_url: String = ""
 
-
-        val BASE_URL = "https://newsdata.io/api/1/"
+        var BASE_URL = "https://newsdata.io/api/1/"
 /*
         val api = Retrofit.Builder()
             .baseUrl(BASE_URL)
@@ -25,10 +23,10 @@ class ApiConfigurations {
 
         inline fun <reified T : Api> getClient(url: String? = null): T {
             if (retrofit == null) {
-                url?.apply { base_url = this }
+                url?.apply { BASE_URL = this }
                 retrofit = Retrofit.Builder()
                     .client(client)
-                    .baseUrl(if (base_url.endsWith("/")) base_url else "$base_url/")
+                    .baseUrl(if (BASE_URL.endsWith("/")) BASE_URL else "$BASE_URL/")
                     .addConverterFactory(GsonConverterFactory.create(gson))
                     //.addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                     .build()
