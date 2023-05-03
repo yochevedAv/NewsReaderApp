@@ -14,41 +14,30 @@ import com.example.myapplication.api.ArticleJson
 import com.example.myapplication.api.ResultX
 import com.example.myapplication.api.ResultXTypeConverter
 import com.example.myapplication.api.StringListTypeConverter
+import com.example.myapplication.data.Article
+import com.example.myapplication.data.ArticleDao
 import okhttp3.RequestBody
 
-@Database(entities = [ArticleJson::class],version = 1)
-@TypeConverters(ResultXTypeConverter::class,
-                StringListTypeConverter::class,
-                AnyTypeConverter::class)
-
+@Database(entities = [Article::class], version = 2)
 abstract class ArticleDatabase : RoomDatabase() {
-
     abstract fun articleDao(): ArticleDao
 
     companion object {
         @Volatile
         private var INSTANCE: ArticleDatabase? = null
 
-        fun getDatabase(context: Context): ArticleDatabase {
+        fun getInstance(context: Context): ArticleDatabase {
             return INSTANCE ?: synchronized(this) {
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
                     ArticleDatabase::class.java,
-                    "article_database"
-                ).build()
+                    "my_database"
+                ).fallbackToDestructiveMigration().build()
                 INSTANCE = instance
                 instance
             }
         }
+
+
     }
-}
-
-
-@Dao
-interface ArticleDao {
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertArticleObject(articles: ArticleJson)
-
-    @Query("SELECT * FROM Articles")
-    suspend fun getArticleObject(): ArticleJson
 }

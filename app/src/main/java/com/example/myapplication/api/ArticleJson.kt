@@ -8,7 +8,7 @@ import com.google.gson.annotations.SerializedName
 @Entity(tableName = "Articles")
 data class ArticleJson(
     @PrimaryKey val nextPage: String,
-    val results: List<ResultX>,
+    var results: List<ResultX>,
     val status: String,
     val totalResults: Int
 )

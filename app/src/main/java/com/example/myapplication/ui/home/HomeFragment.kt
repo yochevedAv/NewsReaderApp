@@ -11,7 +11,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.room.Room
 import com.example.myapplication.api.ArticleJson
 import com.example.myapplication.databinding.FragmentHomeBinding
-import com.example.myapplication.db.ArticleDatabase
 import com.example.myapplication.network.Api
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
